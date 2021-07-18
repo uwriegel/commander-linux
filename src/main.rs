@@ -1,5 +1,6 @@
 use glib::clone;
-use gtk4::prelude::*;
+use gtk4::gdk::Display;
+use gtk4::{CssProvider, StyleContext, prelude::*};
 use gtk4::{self, glib, Application, ApplicationWindow, Button};
 
 fn main() {
@@ -15,6 +16,22 @@ fn build_ui(app: &Application) {
         .default_width(600)
         .default_height(800)
         .build();
+
+    let provider = CssProvider::new();
+    provider.load_from_data("window {
+        background-color: orange;        
+        color: blue;
+    }
+    *:focus {
+        outline-color: red										;
+        outline-style: solid;
+        outline-width: 1px;
+        outline-offset: -1px;
+    }".as_bytes());
+    StyleContext::add_provider_for_display(
+        &Display::default().expect("Error initializing gtk css provider."), 
+        &provider, 
+        gtk4::STYLE_PROVIDER_PRIORITY_USER);
 
     let button = Button::with_label("Monitor");
 
@@ -37,7 +54,6 @@ fn build_ui(app: &Application) {
     window.present();
 }
 
-// TODO css styling
 // TODO Saving window state
 // TODO HeaderBar
 // TODO ListView
