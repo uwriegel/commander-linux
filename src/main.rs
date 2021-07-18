@@ -3,6 +3,7 @@ mod headerbar;
 
 use glib::clone;
 use gtk4::gdk::Display;
+use gtk4::gio::SimpleAction;
 use gtk4::{CssProvider, StyleContext, prelude::*};
 use gtk4::{self, glib, Application};
 
@@ -15,6 +16,23 @@ fn main() {
 }
 
 fn build_ui(app: &Application) {
+    let initial_bool_state = false.to_variant();
+    let action = SimpleAction::new_stateful("viewer", None, &initial_bool_state);
+    action.connect_change_state(move |a, s| {
+        match s {
+            Some(val) => {
+                a.set_state(val);
+                match val.get::<bool>(){
+                    Some(show_viewer) => println!("show_viewer {}", show_viewer),
+                    None => println!("Could not set ShowViewer, could not extract from variant")
+                }
+            },
+            None => println!("Could not set action")
+        }
+    });
+    app.add_action(&action);
+    app.set_accels_for_action("app.viewer", &["F3"]);
+
     let window = CommanderWindow::new(app);
     let headerbar = headerbar::create();
     window.set_titlebar(Some(&headerbar));
@@ -38,6 +56,6 @@ fn build_ui(app: &Application) {
     window.present();
 }
 
-// TODO HeaderBar: Button Preview, Hamburger Button with menu
+// TODO Popover-menu in Headerbar, show hidden
 // TODO ListView
 // TODO TreeView
