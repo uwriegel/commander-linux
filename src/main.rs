@@ -36,3 +36,9 @@ fn build_ui(app: &Application) {
     window.set_child(Some(&button));
     window.present();
 }
+
+// TODO css styling
+// TODO Saving window state
+// TODO HeaderBar
+// TODO ListView
+// TODO TreeView
