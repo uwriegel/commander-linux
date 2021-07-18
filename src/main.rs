@@ -3,7 +3,7 @@ mod commander_window;
 use glib::clone;
 use gtk4::gdk::Display;
 use gtk4::{CssProvider, StyleContext, prelude::*};
-use gtk4::{self, glib, Application, Button};
+use gtk4::{self, glib, Application};
 
 use crate::commander_window::CommanderWindow;
 
@@ -27,6 +27,6 @@ fn build_ui(app: &Application) {
     window.present();
 }
 
+// TODO HeaderBar
 // TODO ListView
 // TODO TreeView
-// TODO HeaderBar
