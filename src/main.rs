@@ -33,6 +33,23 @@ fn build_ui(app: &Application) {
     app.add_action(&action);
     app.set_accels_for_action("app.viewer", &["F3"]);
 
+    let action = SimpleAction::new_stateful("showhidden", None, &initial_bool_state);
+    action.connect_change_state(move |a, s| {
+        match s {
+            Some(val) => {
+                a.set_state(val);
+                match val.get::<bool>(){
+                    Some(show_hidden) => println!("show_hidden {}", show_hidden),
+                    None => println!("Could not set ShowHidden, could not extract from variant")
+                }
+            },
+            None => println!("Could not set action")
+        }
+    });
+    app.add_action(&action);
+    app.set_accels_for_action("app.showhidden", &["<Ctrl>H"]);
+
+
     let window = CommanderWindow::new(app);
     let headerbar = headerbar::create();
     window.set_titlebar(Some(&headerbar));
@@ -56,6 +73,7 @@ fn build_ui(app: &Application) {
     window.present();
 }
 
-// TODO Popover-menu in Headerbar, show hidden
-// TODO ListView
+// TODO F3 show vgrid
+// TODO hgrid
+// TODO ListView in lef hgrid
 // TODO TreeView

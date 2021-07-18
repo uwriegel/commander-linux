@@ -1,4 +1,9 @@
-use gtk4::{Align, Box, HeaderBar, Image, Label, MenuButton, Orientation, pango::EllipsizeMode, prelude::{BoxExt, ButtonExt}};
+use gtk4::{
+    Align, Box, Builder, HeaderBar, Image, Label, MenuButton, Orientation, 
+    gio::MenuModel, pango::EllipsizeMode, prelude::{
+        BoxExt, ButtonExt
+    }
+};
 
 pub fn create()->HeaderBar {
     let headerbar = HeaderBar::builder()
@@ -27,10 +32,31 @@ pub fn create()->HeaderBar {
         .build();
     previewbtn.set_child(Some(&previewimg));
 
+    let menuxml = r#"<?xml version="1.0" encoding="UTF-8"?>
+    <interface>
+      <menu id="app-menu">
+        <section>
+            <item>
+                <attribute name="label">_Versteckte Dateien</attribute>
+                <attribute name="action">app.showhidden</attribute>
+            </item>
+            <item>
+                <attribute name="label">Beenden</attribute>
+                <attribute name="action">app.quit</attribute>
+            </item>
+        </section>
+      </menu>
+    </interface>
+    "#;
+
+    let menu = Builder::from_string(menuxml)
+        .object::<MenuModel>("app-menu")
+        .expect("Expected menu model");
+
     let menubtn = MenuButton::builder()
         .icon_name("open-menu-symbolic")
         .receives_default(true)
-        //.popover(popover)
+        .menu_model(&menu)
         .build();
 
     vbox.append(&label);
