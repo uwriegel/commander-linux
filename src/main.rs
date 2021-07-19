@@ -1,11 +1,6 @@
-use glib::clone;
-use glib::Object;
-use gtk4::ApplicationWindow;
-use gtk4::Settings;
-use gtk4::gdk::Display;
-use gtk4::gio::SimpleAction;
-use gtk4::{CssProvider, StyleContext, prelude::*};
-use gtk4::{self, gio, glib, Application};
+use gdk::{Screen, prelude::SettingsExt};
+use gio::{Settings, SimpleAction};
+use gtk::{self, gio, gdk, Application, ApplicationWindow, CssProvider, StyleContext, prelude::*};
 
 fn main() {
     let app = Application::new(Some("de.uriegel.commander"), Default::default());
@@ -58,11 +53,11 @@ fn build_ui(app: &Application) {
     }
 
     window.connect_destroy(|win|{
-        let settings = gio::Settings::new("de.uriegel.commander");
+        let settings = Settings::new("de.uriegel.commander");
         let size = win.default_size();
-        settings.set_int("window-width", size.0);
-        settings.set_int("window-height", size.1);
-        settings.set_boolean("is-maximized", win.is_maximized());
+        settings.set_int("window-width", size.0).err();
+        settings.set_int("window-height", size.1).err();
+        settings.set_boolean("is-maximized", win.is_maximized()).err();
     });
     let provider = CssProvider::new();
     provider.load_from_data(".title {
@@ -74,11 +69,11 @@ fn build_ui(app: &Application) {
     .subtitle {y
         opacity: 0.6;
         font-size: 12px;
-    }".as_bytes());
-    StyleContext::add_provider_for_display(
-        &Display::default().expect("Error initializing gtk css provider."), 
+    }".as_bytes()).err();
+    StyleContext::add_provider_for_screen(
+        &Screen::default().expect("Error initializing gtk css provider."), 
         &provider, 
-        gtk4::STYLE_PROVIDER_PRIORITY_USER);
+        gtk::STYLE_PROVIDER_PRIORITY_USER);
 
     window.present();
 }
