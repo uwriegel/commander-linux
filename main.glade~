@@ -24,6 +24,9 @@
             <property name="position">0</property>
           </packing>
         </child>
+        <style>
+          <class name="test"/>
+        </style>
       </object>
       <packing>
         <property name="submenu">main</property>

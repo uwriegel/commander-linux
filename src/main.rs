@@ -1,6 +1,6 @@
 use gdk::{Screen, prelude::SettingsExt};
 use gio::{Settings, SimpleAction};
-use gtk::{self, gio, gdk, Application, ApplicationWindow, CssProvider, StyleContext, prelude::*};
+use gtk::{self, Application, ApplicationWindow, Builder, CssProvider, StyleContext, gdk, gio, prelude::*};
 
 fn main() {
     let app = Application::new(Some("de.uriegel.commander"), Default::default());
@@ -42,7 +42,12 @@ fn build_ui(app: &Application) {
     app.add_action(&action);
     app.set_accels_for_action("app.showhidden", &["<Ctrl>H"]);
 
-    let window = ApplicationWindow::new(app);
+    let builder = Builder::new();
+    builder.add_from_file("main.glade").unwrap();
+
+    let window: ApplicationWindow = builder.object("window").unwrap();
+    app.add_window(&window);
+    
     let settings = gio::Settings::new("de.uriegel.commander");
     let width = settings.int("window-width");
     let height = settings.int("window-height");
@@ -52,23 +57,17 @@ fn build_ui(app: &Application) {
         window.maximize();
     }
 
-    window.connect_destroy(|win|{
+    window.connect_configure_event(|win, _|{
         let settings = Settings::new("de.uriegel.commander");
-        let size = win.default_size();
+        let size = win.size();
         settings.set_int("window-width", size.0).err();
         settings.set_int("window-height", size.1).err();
         settings.set_boolean("is-maximized", win.is_maximized()).err();
+        false
     });
     let provider = CssProvider::new();
-    provider.load_from_data(".title {
-        font-weight: bold;        
-    }
-    .title:backdrop {
-        opacity: 0.6;
-    }   
-    .subtitle {y
-        opacity: 0.6;
-        font-size: 12px;
+    provider.load_from_data(".test {
+        background-color: yellow;        
     }".as_bytes()).err();
     StyleContext::add_provider_for_screen(
         &Screen::default().expect("Error initializing gtk css provider."), 
