@@ -1,6 +1,6 @@
 use gdk::{Screen, prelude::SettingsExt};
 use gio::{Settings, SimpleAction};
-use gtk::{self, Application, ApplicationWindow, Builder, CssProvider, StyleContext, gdk, gio, prelude::*};
+use gtk::{self, Application, ApplicationWindow, Builder, CssProvider, StyleContext, Widget, gdk, gio, prelude::*};
 
 fn main() {
     let app = Application::new(Some("de.uriegel.commander"), Default::default());
@@ -9,6 +9,14 @@ fn main() {
 }
 
 fn build_ui(app: &Application) {
+    let builder = Builder::new();
+    builder.add_from_file("main.glade").unwrap();
+
+    let window: ApplicationWindow = builder.object("window").unwrap();
+    let viewer: Widget = builder.object("viewer").unwrap();
+    viewer.set_visible(false);
+    app.add_window(&window);
+
     let initial_bool_state = false.to_variant();
     let action = SimpleAction::new_stateful("viewer", None, &initial_bool_state);
     action.connect_change_state(move |a, s| {
@@ -16,7 +24,10 @@ fn build_ui(app: &Application) {
             Some(val) => {
                 a.set_state(val);
                 match val.get::<bool>(){
-                    Some(show_viewer) => println!("show_viewer {}", show_viewer),
+                    Some(show_viewer) => {
+                        viewer.set_visible(show_viewer);
+                        println!("show_viewer {}", show_viewer)
+                    },
                     None => println!("Could not set ShowViewer, could not extract from variant")
                 }
             },
@@ -42,12 +53,6 @@ fn build_ui(app: &Application) {
     app.add_action(&action);
     app.set_accels_for_action("app.showhidden", &["<Ctrl>H"]);
 
-    let builder = Builder::new();
-    builder.add_from_file("main.glade").unwrap();
-
-    let window: ApplicationWindow = builder.object("window").unwrap();
-    app.add_window(&window);
-    
     let settings = gio::Settings::new("de.uriegel.commander");
     let width = settings.int("window-width");
     let height = settings.int("window-height");
@@ -68,6 +73,9 @@ fn build_ui(app: &Application) {
     let provider = CssProvider::new();
     provider.load_from_data(".test {
         background-color: yellow;        
+    }
+    .hidden {
+        visible: false;
     }".as_bytes()).err();
     StyleContext::add_provider_for_screen(
         &Screen::default().expect("Error initializing gtk css provider."), 
@@ -77,6 +85,5 @@ fn build_ui(app: &Application) {
     window.present();
 }
 
-// TODO F3 show vgrid
 // TODO ListView in lef hgrid
 // TODO TreeView
