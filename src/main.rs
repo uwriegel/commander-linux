@@ -1,13 +1,11 @@
-mod commander_window;
-mod headerbar;
-
 use glib::clone;
+use glib::Object;
+use gtk4::ApplicationWindow;
+use gtk4::Settings;
 use gtk4::gdk::Display;
 use gtk4::gio::SimpleAction;
 use gtk4::{CssProvider, StyleContext, prelude::*};
-use gtk4::{self, glib, Application};
-
-use crate::commander_window::CommanderWindow;
+use gtk4::{self, gio, glib, Application};
 
 fn main() {
     let app = Application::new(Some("de.uriegel.commander"), Default::default());
@@ -49,11 +47,23 @@ fn build_ui(app: &Application) {
     app.add_action(&action);
     app.set_accels_for_action("app.showhidden", &["<Ctrl>H"]);
 
+    let window = ApplicationWindow::new(app);
+    let settings = gio::Settings::new("de.uriegel.commander");
+    let width = settings.int("window-width");
+    let height = settings.int("window-height");
+    let is_maximized = settings.boolean("is-maximized");
+    window.set_default_size(width, height);
+    if is_maximized {
+        window.maximize();
+    }
 
-    let window = CommanderWindow::new(app);
-    let headerbar = headerbar::create();
-    window.set_titlebar(Some(&headerbar));
-
+    window.connect_destroy(|win|{
+        let settings = gio::Settings::new("de.uriegel.commander");
+        let size = win.default_size();
+        settings.set_int("window-width", size.0);
+        settings.set_int("window-height", size.1);
+        settings.set_boolean("is-maximized", win.is_maximized());
+    });
     let provider = CssProvider::new();
     provider.load_from_data(".title {
         font-weight: bold;        
@@ -61,7 +71,7 @@ fn build_ui(app: &Application) {
     .title:backdrop {
         opacity: 0.6;
     }   
-    .subtitle {
+    .subtitle {y
         opacity: 0.6;
         font-size: 12px;
     }".as_bytes());
