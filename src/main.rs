@@ -78,6 +78,5 @@ fn build_ui(app: &Application) {
 }
 
 // TODO F3 show vgrid
-// TODO hgrid
 // TODO ListView in lef hgrid
 // TODO TreeView
