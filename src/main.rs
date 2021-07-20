@@ -85,5 +85,3 @@ fn build_ui(app: &Application) {
     window.present();
 }
 
-// TODO ListView in lef hgrid
-// TODO TreeView
