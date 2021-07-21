@@ -51,12 +51,13 @@
               <object class="GtkScrolledWindow">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="hscrollbar-policy">never</property>
                 <property name="shadow-type">in</property>
                 <child>
-                  <object class="GtkTreeView">
+                  <object class="GtkTreeView" id="leftCommander">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
+                    <property name="resize-mode">immediate</property>
+                    <property name="reorderable">True</property>
                     <child internal-child="selection">
                       <object class="GtkTreeSelection"/>
                     </child>
@@ -72,12 +73,12 @@
               <object class="GtkScrolledWindow">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="hscrollbar-policy">never</property>
                 <property name="shadow-type">in</property>
                 <child>
-                  <object class="GtkTreeView">
+                  <object class="GtkTreeView" id="rightCommander">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
+                    <property name="reorderable">True</property>
                     <child internal-child="selection">
                       <object class="GtkTreeSelection"/>
                     </child>

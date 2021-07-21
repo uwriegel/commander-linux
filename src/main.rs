@@ -1,6 +1,32 @@
 use gdk::{Screen, prelude::SettingsExt};
 use gio::{Settings, SimpleAction};
-use gtk::{self, Application, ApplicationWindow, Builder, CssProvider, StyleContext, Widget, gdk, gio, prelude::*};
+use gtk::{self, Application, ApplicationWindow, Builder, CellRendererText, CssProvider, ListStore, StyleContext, TreeView, TreeViewColumn, Widget, gdk, gio, prelude::*};
+
+fn append_column(tree: &TreeView, id: i32) {
+    let column = TreeViewColumn::new();
+    let cell = CellRendererText::new();
+
+    column.set_title(&format!("Spalte {}", id));
+    column.set_resizable(true);
+    column.set_expand(true);
+    column.pack_start(&cell, true);
+    // Association of the view's column with the model's `id` column.
+    column.add_attribute(&cell, "text", id);
+    tree.append_column(&column);
+}
+
+fn create_and_fill_model() -> ListStore {
+    // Creation of a model with two rows.
+    let model = ListStore::new(&[u32::static_type(), String::static_type()]);
+    
+    // Filling up the tree view.
+    let entries = &["Michel", "Sara", "Liam", "Zelda", "Neo", "Octopus master"];
+    for (i, entry) in entries.iter().enumerate() {
+        model.insert_with_values(None, &[(0, &(i as u32 + 1).to_value()), (1, &entry.to_string().to_value())]);
+    }
+    model
+}
+
 
 fn main() {
     let app = Application::new(Some("de.uriegel.commander"), Default::default());
@@ -13,6 +39,20 @@ fn build_ui(app: &Application) {
     builder.add_from_file("main.glade").unwrap();
 
     let window: ApplicationWindow = builder.object("window").unwrap();
+    let left_commander: TreeView = builder.object("leftCommander").unwrap();
+    let right_commander: TreeView = builder.object("rightCommander").unwrap();
+    append_column(&left_commander, 0);
+    append_column(&left_commander, 1);
+    append_column(&left_commander, 2);
+    let model = create_and_fill_model();
+    left_commander.set_model(Some(&model));
+
+    append_column(&right_commander, 0);
+    append_column(&right_commander, 1);
+    append_column(&right_commander, 2);
+    let model = create_and_fill_model();
+    right_commander.set_model(Some(&model));
+    
     let viewer: Widget = builder.object("viewer").unwrap();
     viewer.set_visible(false);
     app.add_window(&window);
