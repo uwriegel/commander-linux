@@ -1,3 +1,5 @@
+mod processor;
+
 use gdk::{Screen, prelude::SettingsExt};
 use gio::{Settings, SimpleAction};
 use gtk::{self, Application, ApplicationWindow, Builder, CellRendererText, CssProvider, ListStore, StyleContext, TreeView, TreeViewColumn, Widget, gdk, gio, prelude::*};
@@ -29,6 +31,10 @@ fn create_and_fill_model() -> ListStore {
 
 
 fn main() {
+
+    processor::test();
+    processor::directory::testdir();
+
     let app = Application::new(Some("de.uriegel.commander"), Default::default());
     app.connect_activate(build_ui);
     app.run();
@@ -125,3 +131,10 @@ fn build_ui(app: &Application) {
     window.present();
 }
 
+// TODO Custom Application with Boxes for class leftFolder and RightFolder
+// TODO Folder: class with processor
+// TODO class Processor with Box<Trait>
+// TODO Fill ListBox with entry from DirectoryEntry
+// TODO SingfelSelection, red rectangle instead of blue filled rectangle
+// TODO PixBuf file icon
+// TODO Tab control
