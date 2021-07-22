@@ -1,6 +1,6 @@
 use std::{cell::RefCell, rc::Rc};
 
-use gtk::{Builder, Entry, ListStore, TreeView, gdk::ModifierType, prelude::*};
+use gtk::{Builder, Entry, TreeView, gdk::ModifierType, prelude::*};
 
 use crate::processor::{DefaultProcessor, Processor, check_processor};
 
@@ -19,12 +19,6 @@ impl Folder {
         let entry: Entry = builder.object(&(id.to_string() + "-entry").to_string()).unwrap();
         let shift_focus_callbacks = Rc::new(RefCell::new(Vec::new()));
         let processor: Rc<RefCell<Box<dyn Processor>>> = Rc::new(RefCell::new(Box::new(DefaultProcessor {})));
-
-        // append_column(&treeview, 0);
-        // append_column(&treeview, 1);
-        // append_column(&treeview, 2);
-        // let model = create_and_fill_model();
-        // treeview.set_model(Some(&model));
 
         let mut folder = Self {
             id: id.to_string(),
@@ -76,20 +70,10 @@ impl Folder {
         if processor_changed {
             processor.prepare_treeview(&self.treeview);
         }
+        processor.get_items(&self.treeview, path.to_string());
     }
 }
 
-fn create_and_fill_model() -> ListStore {
-    // Creation of a model with two rows.
-    let model = ListStore::new(&[u32::static_type(), String::static_type()]);
-    
-    // Filling up the tree view.
-    let entries = &["Michel", "Sara", "Liam", "Zelda", "Neo", "Octopus master"];
-    for (i, entry) in entries.iter().enumerate() {
-        model.insert_with_values(None, &[(0, &(i as u32 + 1).to_value()), (1, &entry.to_string().to_value())]);
-    }
-    model
-}
 
 
 
