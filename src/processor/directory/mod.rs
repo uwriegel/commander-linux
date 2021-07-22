@@ -5,7 +5,7 @@ use super::{Processor, ProcessorType};
 pub struct DirectoryProcessor;
 
 impl Processor for DirectoryProcessor { 
-    fn check(&self, processor_type: ProcessorType)-> bool { true }
+    fn check(&self, processor_type: &ProcessorType)-> bool { *processor_type == ProcessorType::Directory }
     
     fn prepare_treeview(&self, treeview: &TreeView) {
         for col in treeview.columns() {

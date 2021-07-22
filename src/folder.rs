@@ -2,7 +2,7 @@ use std::{cell::RefCell, rc::Rc};
 
 use gtk::{Builder, Entry, ListStore, TreeView, gdk::ModifierType, prelude::*};
 
-use crate::processor::{DefaultProcessor, Processor, ProcessorType, directory::DirectoryProcessor};
+use crate::processor::{DefaultProcessor, Processor, check_processor};
 
 #[derive(Clone)]
 pub struct Folder {
@@ -71,19 +71,11 @@ impl Folder {
     }
 
     fn change_path(&self, path: &str) {
-        let processor_cell = Rc::clone(&self.processor);
-
-        let check_processor = || {
-            let processor = processor_cell.borrow_mut();
-            processor.check(ProcessorType::Directory)
-        };
-
-        if !check_processor() {
-            processor_cell.replace(Box::new(DirectoryProcessor {}));
-            let processor = processor_cell.borrow_mut();
+        let processor_changed = check_processor(&self.processor, path);
+        let processor = self.processor.borrow_mut();
+        if processor_changed {
             processor.prepare_treeview(&self.treeview);
         }
-        //let processor = processor_cell.borrow_mut();
     }
 }
 

@@ -11,7 +11,6 @@ fn main() {
     application.run();
 }
 
-// TODO Check path!
 // TODO Fill ListBox with entry from DirectoryEntry
 // TODO SingleSelection, red rectangle instead of blue filled rectangle
 // TODO Folder: no focus rect in treview
