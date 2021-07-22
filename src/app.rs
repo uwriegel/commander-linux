@@ -12,6 +12,16 @@ pub fn initialize_app(application: &Application) {
     let left_folder = Folder::new(&builder, "left");
     let right_folder = Folder::new(&builder, "right");
 
+    left_folder.focus();
+
+    let right_folder_clone = right_folder.clone();
+    left_folder.connect_shift_focus(move ||{
+        right_folder_clone.focus();
+    });
+    right_folder.connect_shift_focus(move ||{
+        left_folder.focus();
+    });
+
     let viewer: Widget = builder.object("viewer").unwrap();
     viewer.set_visible(false);
     application.add_window(&window);
