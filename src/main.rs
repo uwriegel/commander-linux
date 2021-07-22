@@ -15,5 +15,6 @@ fn main() {
 // TODO class Processor with Box<Trait>
 // TODO Fill ListBox with entry from DirectoryEntry
 // TODO SingleSelection, red rectangle instead of blue filled rectangle
+// TODO Folder: no focus rect in treview
 // TODO PixBuf file icon
 
