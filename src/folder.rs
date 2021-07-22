@@ -1,13 +1,16 @@
 use std::{cell::RefCell, rc::Rc};
 
-use gtk::{Builder, CellRendererText, Entry, ListStore, TreeView, TreeViewColumn, gdk::ModifierType, prelude::*};
+use gtk::{Builder, Entry, ListStore, TreeView, gdk::ModifierType, prelude::*};
+
+use crate::processor::{DefaultProcessor, Processor, ProcessorType, directory::DirectoryProcessor};
 
 #[derive(Clone)]
 pub struct Folder {
     id: String,
     treeview: TreeView,
     entry: Entry,
-    shift_focus_callbacks: Rc<RefCell<Vec<Box<dyn Fn()>>>>
+    shift_focus_callbacks: Rc<RefCell<Vec<Box<dyn Fn()>>>>,
+    processor: Rc<RefCell<Box<dyn Processor>>>
 }
 
 impl Folder {
@@ -15,6 +18,7 @@ impl Folder {
         let treeview : TreeView = builder.object(&(id.to_string() + "-folder").to_string()).unwrap();
         let entry: Entry = builder.object(&(id.to_string() + "-entry").to_string()).unwrap();
         let shift_focus_callbacks = Rc::new(RefCell::new(Vec::new()));
+        let processor: Rc<RefCell<Box<dyn Processor>>> = Rc::new(RefCell::new(Box::new(DefaultProcessor {})));
 
         // append_column(&treeview, 0);
         // append_column(&treeview, 1);
@@ -22,11 +26,12 @@ impl Folder {
         // let model = create_and_fill_model();
         // treeview.set_model(Some(&model));
 
-        let folder = Self {
+        let mut folder = Self {
             id: id.to_string(),
             treeview,
             entry,
-            shift_focus_callbacks
+            shift_focus_callbacks,
+            processor
         };
         folder.init();
         folder
@@ -41,11 +46,11 @@ impl Folder {
         b.push(Box::new(f));
     }
 
-    fn init(&self) {
+    fn init(&mut self) {
         let folder = self.clone();
         self.entry.connect_activate(move|_|{
             let text = folder.entry.text().to_string();
-            println!("bin aktiviert: {}", text);
+            folder.change_path(&text);
             folder.focus();
         });
         
@@ -54,9 +59,7 @@ impl Folder {
             match k.keycode() {
                 Some(23) if k.state() & ModifierType::SHIFT_MASK != ModifierType::SHIFT_MASK => {
                     let b = folder_clone.shift_focus_callbacks.borrow();
-                    let was = &b[0];
-                    let fun = was.as_ref();
-                    fun();
+                    &b[0].as_ref()();
                     Inhibit(true)
                 },
                 _ => {
@@ -66,19 +69,22 @@ impl Folder {
             
         });
     }
-}
 
-fn append_column(tree: &TreeView, id: i32) {
-    let column = TreeViewColumn::new();
-    let cell = CellRendererText::new();
+    fn change_path(&self, path: &str) {
+        let processor_cell = Rc::clone(&self.processor);
 
-    column.set_title(&format!("Spalte {}", id));
-    column.set_resizable(true);
-    column.set_expand(true);
-    column.pack_start(&cell, true);
-    // Association of the view's column with the model's `id` column.
-    column.add_attribute(&cell, "text", id);
-    tree.append_column(&column);
+        let check_processor = || {
+            let processor = processor_cell.borrow_mut();
+            processor.check(ProcessorType::Directory)
+        };
+
+        if !check_processor() {
+            processor_cell.replace(Box::new(DirectoryProcessor {}));
+            let processor = processor_cell.borrow_mut();
+            processor.prepare_treeview(&self.treeview);
+        }
+        //let processor = processor_cell.borrow_mut();
+    }
 }
 
 fn create_and_fill_model() -> ListStore {
