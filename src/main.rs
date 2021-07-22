@@ -1,15 +1,16 @@
 mod app;
+mod folder;
 mod processor;
 
-use app::App;
+use app::initialize_app;
+use gtk::{Application, prelude::{ApplicationExt, ApplicationExtManual}};
 
 fn main() {
-    let app = App::new();
-    app.run();
-
-    processor::test();
-    processor::directory::testdir();
+    let application = Application::new(Some("de.uriegel.commander"), Default::default());
+    application.connect_activate(initialize_app);
+    application.run();
 }
+
 
 
 // TODO Custom Application with Boxes for class leftFolder and RightFolder
