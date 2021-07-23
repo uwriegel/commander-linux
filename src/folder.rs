@@ -70,7 +70,7 @@ impl Folder {
         if processor_changed {
             processor.prepare_treeview(&self.treeview);
         }
-        processor.get_items(&self.treeview, path.to_string());
+        processor.fill_items(&self.treeview, path.to_string());
     }
 }
 

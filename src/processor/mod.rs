@@ -19,7 +19,7 @@ pub trait Processor {
             treeview.remove_column(&col);
         }
     }
-    fn get_items(&self, _treeview: &TreeView, _path: String) { }
+    fn fill_items(&self, _treeview: &TreeView, _path: String) { }
 }
 pub struct DefaultProcessor;
 

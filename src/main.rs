@@ -13,6 +13,13 @@ fn main() {
 
 // TODO Fill ListBox with entry from DirectoryEntry
 // TODO SingleSelection, red rectangle instead of blue filled rectangle
-// TODO Folder: no focus rect in treview
+// TODO Folder: no focus rect in treeview
 // TODO PixBuf file icon
+// TODO Selection control
+// TODO PixBuf selected
+// TODO Sorting
+// TODO Optional extension column
+// TODO Restriction
+// TODO History
+// TODO Exif date with progress
 
